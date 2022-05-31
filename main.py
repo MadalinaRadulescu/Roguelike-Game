@@ -12,21 +12,21 @@ BOARD_WIDTH = 30
 BOARD_HEIGHT = 20
 
 def fight_boss(player, boss):
-    print("Let the fight begin!")
+    print("\nLet the fight begin!")
     while True:
-        user_choice = input("Do you want to fight? (y/n)")
+        user_choice = input("\nDo you want to fight? (y/n)\n")
         if user_choice == "n":
-            print( player['player name'] + " you are a coward, " + boss['boss name'] + " has won the game!")
-            break
+            return 1
         elif user_choice == "y":
             player["HP"] -= 22
+            player["Power"] -= 8
             boss["HP"] -= 22
-            if player["HP"] == 0:
-                print(f"{boss['boss name']} has won the game! You lose hahahaha!")
-                break
-            if boss["HP"] == 0:
-                print(f"Congratulation {player['player name']} you have won the game")
-                break
+            boss["Power"] -= 6
+            display_itemes(player, boss)
+            if player["HP"] < 0 or player["Power"]<0:
+                return 2
+            if boss["HP"] < 0 or boss["Power"]<0:
+                return 3
 
 
 
@@ -51,45 +51,45 @@ def player_direction(key, board, row, col, player):
     if key == "W" or key == "w":
         if board[row-1][col] == "#":
             return row, col
-        if board[row-1][col] == "!":
+        elif board[row-1][col] == "B":
+            return row, col
+        elif board[row-1][col] == "!":
             player["Power"] += 30
         elif board[row-1][col] == "*":
             player["HP"] += 60
-        elif board[row-1][col] == "B":
-            fight_boss(player, boss)
         board[row][col] = " "
         return row - 1, col
     elif key == "S" or key == "s":
         if board[row+1][col] == "#":
             return row, col
-        if board[row+1][col] == "!":
+        elif board[row+1][col] == "B":
+            return row, col
+        elif board[row+1][col] == "!":
             player["Power"] += 30
         elif board[row+1][col] == "*":
             player["HP"] += 60
-        elif board[row+1][col] == "B":
-            fight_boss(player, boss)
         board[row][col] = " "
         return row+1, col
     elif key == "D" or key == "d":
         if board[row][col+1] == "#":
             return row, col
-        if board[row][col+1] == "!":
+        elif board[row][col+1] == "B":
+            return row, col
+        elif board[row][col+1] == "!":
             player["Power"] += 30
         elif board[row][col+1] == "*":
             player["HP"] += 60
-        elif board[row][col+1] == "B":
-            fight_boss(player, boss)
         board[row][col] = " "
         return row, col+1
     elif key == "A" or key == "a":
         if board[row][col-1] == "#":
             return row, col
-        if board[row][col-1] == "!":
+        elif board[row][col-1] == "B":
+            return row, col
+        elif board[row][col-1] == "!":
             player["Power"] += 30
         elif board[row][col-1] == "*":
             player["HP"] += 60
-        elif board[row][col - 1] == "B":
-            fight_boss(player, boss)
         board[row][col] = " "
         return row, col-1
 
@@ -97,6 +97,7 @@ def display_itemes(player, boss):
 
     for k, v in player.items():
         print(k + ": " + str(v))
+    print()
     for k, v in boss.items():
         print(k + ": " + str(v))
      
@@ -109,9 +110,27 @@ def main():
     util.clear_screen()
     is_running = True
     while is_running:
+        winner = 0
         engine.put_player_on_board(board, player, row, col)
         ui.display_board(board, BOARD_WIDTH)
         display_itemes(player, boss)
+        if board[row-1][col] == "B":
+            winner = fight_boss(player, boss)
+        elif board[row+1][col] == "B":
+            winner = fight_boss(player, boss)
+        elif board[row][col-1] == "B":
+            winner = fight_boss(player, boss)
+        elif board[row][col+1] == "B":
+            winner = fight_boss(player, boss)
+        if winner == 1:
+            print( "\n"+ player['player name'] + " you are a coward, " + boss['boss name'] + " has won the game!\n")
+            break
+        elif winner == 2:
+            print(f"\n{boss['boss name']} has won the game! You lose hahahaha!\n")
+            break
+        elif winner == 3:
+            print(f"\nCongratulation {player['player name']} you have won the game\n")
+            break
         key = util.key_pressed()
         row, col = player_direction(key,board, row, col, player)
         if key == 'q':
