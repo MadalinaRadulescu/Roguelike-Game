@@ -12,15 +12,15 @@ def create_board(width, height):
     Returns:
     list: Game board
     '''
-    items = [" ", "#"]
+    items = ["🎆", "🍉"]
     index_of_items = 0
 
-    for number in range(4):
-        wall = []
-        board = []
-        for _ in range(width):
-            wall.append(items[index_of_items + 1])
-        board.append(wall.copy())
+    
+    wall = []
+    board = []
+    for _ in range(width):
+        wall.append(items[index_of_items + 1])
+    board.append(wall.copy())
     for column in range(height-2):
         row = []
         for index in range(width):
